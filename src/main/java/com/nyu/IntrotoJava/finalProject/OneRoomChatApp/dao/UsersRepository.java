@@ -10,7 +10,8 @@ import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.models.Users;
 
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Long>{
-	
+    Users findByUsernameAndPassword(String userName, String password);
+
 //	Users addUser(String userName);
 	
 }

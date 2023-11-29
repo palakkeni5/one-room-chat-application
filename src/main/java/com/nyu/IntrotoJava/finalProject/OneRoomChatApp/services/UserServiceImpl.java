@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.dao.UsersRepository;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.models.Users;
+import org.springframework.util.DigestUtils;
 
 @Service
 public class UserServiceImpl implements UsersService {
@@ -30,10 +31,28 @@ public class UserServiceImpl implements UsersService {
 	}
 
 	@Override
-	public void addUser(String userName, String FullName) {
+	public void addUser(Users user) {
 		Users newUser = new Users();
-		newUser.setUsername(userName);
-		newUser.setFullName(FullName);
+
+		newUser.setUsername(user.getUsername());
+		newUser.setFullName(user.getFullName());
+		newUser.setDateCreated(new Date());
+
+//		md5 hash the password using apache commons library
+		String password = user.getPassword();
+		String hashed = DigestUtils.md5DigestAsHex(password.getBytes());
+
+		newUser.setPassword(hashed);
 		usersRepository.save(newUser);		
 	}
+
+	@Override
+	public Users login(Users user) {
+		String userName = user.getUsername();
+		String password = user.getPassword();
+		password = DigestUtils.md5DigestAsHex(password.getBytes());
+		return usersRepository.findByUsernameAndPassword(userName, password);
+	}
+
+
 }
