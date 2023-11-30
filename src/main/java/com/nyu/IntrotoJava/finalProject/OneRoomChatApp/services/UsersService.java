@@ -10,6 +10,8 @@ public interface UsersService {
 
 	Optional<Users> findUserById(long id);
 	List<Users> findAllUsers();
-	void addUser(String userName, String FullName);
-	
+	void addUser(Users user);
+
+	Users login(Users user);
+
 }

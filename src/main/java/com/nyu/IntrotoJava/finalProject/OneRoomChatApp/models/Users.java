@@ -29,8 +29,19 @@ public class Users {
     @Column(name="date_created",nullable = false )
     private Date dateCreated;
 
+	@Column(name= "user_password", nullable = false)
+	private String password;
+
     public Long getUserId() {
 		return userId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public void setUserId(Long userId) {
@@ -64,7 +75,7 @@ public class Users {
 	@Override
 	public String toString() {
 		return "Users [userId=" + userId + ", username=" + username + ", fullName=" + fullName + ", dateCreated="
-				+ dateCreated + "]";
+				+ dateCreated + ", password=" + password +"]";
 	}
 
 }
