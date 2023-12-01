@@ -3,10 +3,10 @@ CREATE DATABASE one_room_chat_app;
 CREATE TABLE USERS (
 
   user_id SERIAL PRIMARY KEY,
-  username TEXT NOT NULL,
+  username TEXT NOT NULL unique,
   user_fullname TEXT NOT NULL,
-  date_created date NOT NULL DEFAULT now()
-  
+  date_created date NOT NULL DEFAULT now(),
+  user_password TEXT NOT NULL
 );
 
 CREATE TABLE CHATS(
@@ -22,18 +22,22 @@ CREATE TABLE CHATS(
 
 insert into users(
   username,
-  user_fullname
+  user_fullname,
+  user_password
 ) VALUES (
   'palakkeni5',
-  'Palak Pramod Keni'
+  'Palak Pramod Keni',
+  '827ccb0eea8a706c4c34a16891f84e7b'
 );
 
 insert into users(
   username,
-  user_fullname
+  user_fullname,
+  user_password
 ) VALUES (
-  'testuser15',
-  'Test User 15'
+  'jerryliu',
+  'jerryliu',
+  '827ccb0eea8a706c4c34a16891f84e7b'
 );
 
 insert into chats(
