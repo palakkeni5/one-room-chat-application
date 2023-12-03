@@ -13,5 +13,6 @@ public interface UsersService {
 	void addUser(Users user);
 
 	Users login(Users user);
+	Users findUserByUserName(String userName);
 
 }

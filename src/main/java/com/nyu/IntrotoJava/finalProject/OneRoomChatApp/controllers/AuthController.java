@@ -1,11 +1,17 @@
 package com.nyu.IntrotoJava.finalProject.OneRoomChatApp.controllers;
 
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.models.Users;
+import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.request.LoginRequest;
+import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.request.RegisterUserRequest;
+import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.response.LoginResponse;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.services.UsersService;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.JwtUtils;
 import com.nyu.IntrotoJava.finalProject.OneRoomChatApp.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,39 +23,54 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = { "*" })
 public class AuthController {
 
     @Autowired
     private UsersService usersService;
 
     @PostMapping("/signup")
-    public Result signup(@RequestBody Users user) {
-        log.info("username: " + user);
+    public ResponseEntity<Object> signup(@RequestBody RegisterUserRequest registerUser) {
+        Users newUser = new Users();
+        newUser.setUsername(registerUser.getUserName());
+        newUser.setFullName(registerUser.getFullName());
+        newUser.setPassword(registerUser.getPassword());
 
-        Users u = usersService.login(user);
+        Users checkUserExist = usersService.findUserByUserName(newUser.getUsername());
 
-        if(u != null){
-            return Result.error("username already exists");
+        if(checkUserExist != null){
+            return ResponseEntity.badRequest().body(Result.error("Username already exists"));
         }
-        usersService.addUser(user);
-        return Result.success();
+        usersService.addUser(newUser);
+        
+        return ResponseEntity.status(HttpStatus.OK).body(Result.success("User successfully registered"));
     }
+    
+    
     @PostMapping("/login")
-    public Result login(@RequestBody Users user) {
-        log.info("username: " + user);
+    public ResponseEntity<Object> login(@RequestBody LoginRequest loginDetails) {
+        
+    	LoginResponse loginResponse = new LoginResponse();
+    	
+        Users tempUser = new Users();
+        tempUser.setUsername(loginDetails.getUsername());
+        tempUser.setPassword(loginDetails.getPassword());
+        Users userMatched = usersService.login(tempUser);
 
-        Users u = usersService.login(user);
-
-        if(u != null){
+        if(userMatched!= null){
 //            generate token for the user
             Map<String, Object> claims = new HashMap<>();
-            claims.put("userId", u.getUserId());
-            claims.put("username", u.getUsername());
-            claims.put("fullName", u.getFullName());
+            claims.put("userId", userMatched.getUserId());
+            claims.put("username", userMatched.getUsername());
+            claims.put("fullName", userMatched.getFullName());
             String token = JwtUtils.generateToken(claims);
-
-            return Result.success(token);
+//            claims.put("token", token);
+            loginResponse.setUserId(userMatched.getUserId());
+            loginResponse.setUsername(userMatched.getUsername());
+            loginResponse.setToken(token);
+            return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+            
         }
-        return Result.error("login failed, wrong username or password");
+        return ResponseEntity.badRequest().body(Result.error("Login failed. Username or Password incorrect"));
     }
 }
