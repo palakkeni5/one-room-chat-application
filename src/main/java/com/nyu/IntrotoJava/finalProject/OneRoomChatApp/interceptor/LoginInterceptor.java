@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -30,12 +31,14 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String jwt = request.getHeader("token");
+        String jwt = request.getHeader("Authorization");
 
         if(!StringUtils.hasLength(jwt)){
             log.info("jwt is empty");
-            Result error = Result.error("NOT_LOGGED_IN");
-            String notLogin = gson.toJson(error);
+//            Result error = Result.error();
+            
+
+            String notLogin = gson.toJson(ResponseEntity.badRequest().body(Result.error("NOT_LOGGED_IN")));
             response.getWriter().write(notLogin);
             return false;
         }
