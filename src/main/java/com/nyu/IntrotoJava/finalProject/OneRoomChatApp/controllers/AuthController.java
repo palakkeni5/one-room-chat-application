@@ -14,11 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -42,7 +40,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<Object> signup(@RequestBody RegisterUserRequest registerUser) {
         Users newUser = new Users();
-        newUser.setUsername(registerUser.getUserName());
+        newUser.setUsername(registerUser.getUsername());
         newUser.setFullName(registerUser.getFullName());
 //        hash the password before transferring to kafka
         newUser.setPassword(DigestUtils.md5DigestAsHex(registerUser.getPassword().getBytes()));
